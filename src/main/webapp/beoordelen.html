@@ -5,72 +5,120 @@
 <script
 	src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <title>Inschrijving beoordelen</title>
+<link rel="stylesheet" type="text/css" href="css/styling.css">
 </head>
 <body>
-	<h1 align="center">Inschrijving beoordelen</h1>
-	<div id="persoonInschrijving">
-	<p id="respone">Kies een openstaande inschrijving om te beoordelen:<br></p>
-	<table id="allePersonen">
-		<tr>
-			<th>Beschikbare inschrijvingen:</th>
-			<th></th>
-		</tr>
-	</table>
+	<div id="frame">
+		<div id="main">
+			<h1 align="center">Inschrijving beoordelen</h1>
+			<div id="persoonInschrijving">
+				<p id="respone">
+					Kies een openstaande inschrijving om te beoordelen:<br>
+				</p>
+				<table id="allePersonen">
+					<tr>
+						<th>Beschikbare inschrijvingen:</th>
+						<th></th>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div id="menu">
+			<a href="inschrijven.html">Inschrijven voor de vereniging</a><br>
+			<a href="beoordelen.html">Inschrijvingen beoordelen</a><br>
+		</div>
+		<script>
+			function initPage() {
+				loadPersonen();
+				//laden van de personen die ingeschreven staan
+			}
+
+			function loadPersonen() {
+				$
+						.getJSON(
+								"restservices/personen/inschrijvingen",
+								function(data) {
+									$
+											.each(
+													data,
+													function(i, k) {
+														$('#allePersonen')
+																.append(
+																		//gegevens toevoegen aan de pagina
+																		"<tr><td>"
+																				+ k.naam
+																				+ "</td><td><input type=submit onclick='loadPersoon("
+																				+ k.persoonid
+																				+ ")' value='Beoordelen'></td></tr>");
+													});
+								});
+			}
+
+			function loadPersoon(p) {
+				$
+						.getJSON(
+								"restservices/personen/" + p,
+								function(data) {
+									$
+											.each(
+													data,
+													function(i, k) {
+														$(
+																'#persoonInschrijving')
+																.text("");
+														$(
+																'#persoonInschrijving')
+																.append(
+																		//gegevens toevoegen aan de pagina
+																		"<p>Dit is een inschrijving van: "
+																				+ k.naam
+																				+ "<br>Email: "
+																				+ k.email
+																				+ "<br>Woonplaats: "
+																				+ k.woonplaats
+																				+ "<br>Postcode: "
+																				+ k.postcode
+																				+ "<br>Telefoonnummer: "
+																				+ k.telefoonnummer
+																				+ "<br>Huisarts: "
+																				+ k.huisarts
+																				+ "<br>Geboortedatum: "
+																				+ k.geboortedatum
+																				+ "<br>Bijzonderheden: "
+																				+ k.bijzonderheden
+																				+ "<br>Betaaltermijn: "
+																				+ k.betaaltermijn
+																				+ "<br>Voeg een groep toe: <select name='groep' id='groepSelectie'><option value='Zwemmend redden 1'>Zwemmend redden 1</option><option value='Zwemmend redden 2'>Zwemmend redden 2</option><option value='Lifesaver 1'>Lifesaver 1</option><option value='Lifesaver 2'>Lifesaver 2</option></select><br><br> <input type='submit' value='Goedkeuren' onclick='beoordeelAccepteer("
+																				+ k.persoonid
+																				+ ")'> <input type='submit' value='Afkeuren' onclick='beoordeelWeiger("
+																				+ k.persoonid
+																				+ ")'></p>");
+													});
+								});
+			}
+
+			function beoordeelAccepteer(persoon) {
+				var data = $("#groepSelectie").serialize();//informatie ophalen
+				$.post("restservices/personen/accepteer/" + persoon, data,
+						function(//pad voor communicatie met back-end
+						response) {
+							$('#persoonInschrijving').append(
+									"<br>Inschrijving beoordeeld!");
+						});
+			}
+
+			function beoordeelWeiger(persoon) {
+				var data = $("#groepSelectie").serialize();//informatie ophalen
+				$.post("restservices/personen/weiger/" + persoon, data,
+						function(//pad voor communicatie met back-end
+						response) {
+							$('#persoonInschrijving').append(
+									"<br>Inschrijving beoordeeld!");
+						});
+			}
+
+			initPage();
+		</script>
 	</div>
-
-	<script>
-		function initPage() {
-			loadPersonen();
-			//laden van de personen die ingeschreven staan
-		}
-
-		function loadPersonen() {
-			$.getJSON("restservices/personen/inschrijvingen", function(data) {
-				$.each(data, function(i, k) {
-					$('#allePersonen').append(//gegevens toevoegen aan de pagina
-							"<tr><td>" + k.naam + "</td><td><input type=submit onclick='loadPersoon(" + k.persoonid + ")' value='Beoordelen'></td></tr>");
-				});
-			});
-		}
-		
-		
-		function loadPersoon(p) {
-			$.getJSON("restservices/personen/" + p, function(data) {
-				$.each(data, function(i, k) {
-					$('#persoonInschrijving').text("");
-					$('#persoonInschrijving').append(
-							//gegevens toevoegen aan de pagina
-							"<p>Dit is een inschrijving van: " + k.naam
-									+ "<br>Email: " + k.email
-									+ "<br>Woonplaats: " + k.woonplaats
-									+ "<br>Postcode: " + k.postcode
-									+ "<br>Telefoonnummer: " + k.telefoonnummer
-									+ "<br>Huisarts: " + k.huisarts
-									+ "<br>Geboortedatum: " + k.geboortedatum
-									+ "<br>Bijzonderheden: " + k.bijzonderheden
-									+ "<br>Betaaltermijn: " + k.betaaltermijn
-									+ "<br>Voeg een groep toe: <select name='groep' id='groepSelectie'><option value='Zwemmend redden 1'>Zwemmend redden 1</option><option value='Zwemmend redden 2'>Zwemmend redden 2</option><option value='Lifesaver 1'>Lifesaver 1</option><option value='Lifesaver 2'>Lifesaver 2</option></select><br><br> <input type='submit' value='Goedkeuren' onclick='beoordeelAccepteer(" + k.persoonid + ")'> <input type='submit' value='Afkeuren' onclick='beoordeelWeiger(" + k.persoonid + ")'></p>");
-				});
-			});
-		}
-		
-		function beoordeelAccepteer(persoon) {
-			var data = $("#groepSelectie").serialize();//informatie ophalen
-			$.post("restservices/personen/accepteer/" + persoon, data, function(//pad voor communicatie met back-end
-			response) {
-				$('#persoonInschrijving').append("<br>Inschrijving beoordeeld!");
-			});
-		}
-		
-		function beoordeelWeiger(persoon) {
-			var data = $("#groepSelectie").serialize();//informatie ophalen
-			$.post("restservices/personen/weiger/" + persoon, data, function(//pad voor communicatie met back-end
-			response) {
-				$('#persoonInschrijving').append("<br>Inschrijving beoordeeld!");
-			});
-		}
-
-		initPage();
-	</script>
 </body>
 </html>

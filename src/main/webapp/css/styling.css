@@ -1,3 +1,13 @@
+body {
+    background-color: #e3dbd2;
+}
+
+h1 {
+	width: 100%;
+	background-color: #beac9a;
+	color: white;
+}
+
 #frame {
 	display: grid;
 	grid-template-columns: 1fr 5fr;
